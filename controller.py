@@ -25,3 +25,6 @@ while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
+
+
+#TEST:
