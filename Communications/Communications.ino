@@ -49,7 +49,7 @@ void loop(){
       //speed may be too fast. If so, make movement occur every nth cycle
       int dir;
       if (left_goto == left_cur) dir = 0
-      if(left_goto > left_cur) dir = 1;
+      else if(left_goto > left_cur) dir = 1;
       else dir = -1;
       SetPosition(LEFT_SERV, left_cur + dir*SPEED);
       left_cur = left_cur + dir*SPEED;
