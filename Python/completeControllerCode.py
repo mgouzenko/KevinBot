@@ -1,23 +1,25 @@
-<<<<<<< HEAD
-'''
-***************************************************************************
-Kully Kekaula
+import pygame, sys, math
+from pygame.locals import *
 
-Description: Methods to derive values from the PS3 controller.  The values
-stored in two dictionaries--one for axes and the other for buttons.  The
-buttons are then returned for use. 
-***************************************************************************
-''' 
-import math, pygame
+pygame.init()
 
-def updateAxes(js):
+### Tells the number of joysticks/error detection
+joystick_count = pygame.joystick.get_count()
+print ("There is ", joystick_count, "joystick/s")
+if joystick_count == 0:
+    print ("Error, I did not find any joysticks")
+else:
+    my_joystick = pygame.joystick.Joystick(0)
+    my_joystick.init()
+
+def updateAxes():
 
     controllerDict = {'X-Axis1': 0, 'Y-Axis2': 0, 'X-Axis2': 0, 'Y-Axis2': 0};
 
-    xAxis = js.get_axis(0) 
-    yAxis = js.get_axis(1) * -1
-    aAxis = js.get_axis(2)
-    bAxis = js.get_axis(3) * -1
+    xAxis = my_joystick.get_axis(0) 
+    yAxis = my_joystick.get_axis(1) * -1
+    aAxis = my_joystick.get_axis(2)
+    bAxis = my_joystick.get_axis(3) * -1
 
     if xAxis < 0.1 and xAxis > -0.1:
         xAxis = 0
@@ -45,24 +47,24 @@ def updateAxes(js):
 
     return controllerDict
 
-def updateButtons(js):
+def updateButtons():
 
     buttonDict = {'xButton': 0, 'circleButton': 0, 'triangleButton': 0, 'squareButton': 0,
     'leftBumper': 0, 'rightBumper': 0, 'leftTrigger': 0, 'rightTrigger': 0,
     'selectButton': 0, 'startButton': 0, 'leftToggle': 0, 'rightToggle': 0,};
 
-    xButton = js.get_button(1)
-    circleButton = js.get_button(2)
-    triangleButton = js.get_button(3)
-    squareButton = js.get_button(0)
-    leftBumper = js.get_button(4)
-    rightBumper = js.get_button(5)
-    leftTrigger = js.get_button(6)
-    rightTrigger = js.get_button(7)
-    selectButton = js.get_button(8)
-    startButton = js.get_button(9)
-    leftToggle = js.get_button(10)
-    rightToggle = js.get_button(11)
+    xButton = my_joystick.get_button(1)
+    circleButton = my_joystick.get_button(2)
+    triangleButton = my_joystick.get_button(3)
+    squareButton = my_joystick.get_button(0)
+    leftBumper = my_joystick.get_button(4)
+    rightBumper = my_joystick.get_button(5)
+    leftTrigger = my_joystick.get_button(6)
+    rightTrigger = my_joystick.get_button(7)
+    selectButton = my_joystick.get_button(8)
+    startButton = my_joystick.get_button(9)
+    leftToggle = my_joystick.get_button(10)
+    rightToggle = my_joystick.get_button(11)
 
     print 'X Button is: ' + str(xButton) + '  Circle Button is: ' + str(circleButton)
     print 'Triangle Button is: ' + str(triangleButton) + '  Square Button is: ' + str(squareButton)
@@ -87,34 +89,11 @@ def updateButtons(js):
     print "dict['xButton']: ", buttonDict['xButton'];
 
     return buttonDict
-=======
-import pygame as pg
-import sys
-import serial
 
-'''
-Event types
-    7 - Axes motion
-        Axis 2: right
-        Axis 3
-
-'''
-
-pg.init()
-size = [500, 700]
-screen = pg.display.set_mode(size)
-pg.display.set_caption("Kevin")
-done = False
-clock = pg.time.Clock()
-joystick = pg.joystick.Joystick(0)
-joystick.init()
 while True:
-    axis1 = joystick.get_axis(1)
-    if abs(axis1)>.1:
-        print axis1
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            sys.exit()
+    pygame.event.pump()
 
+    updateAxes()
+    updateButtons()
 
->>>>>>> 3dbe24af7d189f2867fb97d6d3eb511d0b86a66c
+    pygame.time.wait(300)

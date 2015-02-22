@@ -1,0 +1,42 @@
+Robot-central definition
+
+240 checksum
+BAUD rate 38400
+
+INBOUND 5 Byte packet:
+  walk - left (1Byte) [0
+  walk - right (1Byte) [1
+  turret - x (1Byte) [2
+  turret - y (1Byte) [3
+  
+  1bit toggles: [4
+    fire (1bit)	--> 1 = fire
+    smooth walking toggle (1bit) --> 1 = const speed
+				 --> 0 = const stride				 
+    hip toggle (2 bits)	--> 00 = both down
+			--> 01 = right up
+			--> 10 = left up
+			--> 11 = don't you dare do this
+    enable/disable stop (1 bit) --> 1 = enable
+				--> 0 = disable
+    laser toggle (1 bit)	--> 1 = on
+    2 bits to fill the rest of the byte
+
+
+OUTBOUND 6 Byte:
+  left position walking (1Byte)   
+  right position walking (1Byte)
+  x position turret (1Byte)
+  y position turret (1Byte)
+  battery (1Byte)
+
+  bitwise:
+    hips -- Left up/left down/both down (2 bits)
+		--> 00 = both down
+		--> 01 = right up
+		--> 10 = left up
+		--> 11 = don't you dare do this
+    scoring -- (4 bits) --> 1 = hit
+    2 garbage bits
+
+    
