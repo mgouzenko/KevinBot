@@ -11,7 +11,7 @@ import math, pygame
 
 def updateAxes(js):
 
-    controllerDict = {'X-Axis1': 0, 'Y-Axis2': 0, 'X-Axis2': 0, 'Y-Axis2': 0};
+    controllerDict = {'X-Axis1': 0, 'Y-Axis1': 0, 'X-Axis2': 0, 'Y-Axis2': 0};
 
     xAxis = js.get_axis(0) 
     yAxis = js.get_axis(1) * -1
