@@ -13,6 +13,7 @@ import tkMessageBox as tkm
 import controller, XboxPane
 from PS3Controller import PS3Controller
 from XboxController import XboxController
+import comms
 
 class robotGUI():
     def __init__(self):
@@ -73,6 +74,9 @@ class robotGUI():
 
         #Package frames and create the window
         self.titleFrame.pack()
+
+        #Start commlunications and begin looping
+        comms.init(self)
 
         tk.mainloop()
 
