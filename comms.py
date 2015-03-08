@@ -2,10 +2,8 @@ import pygame as pg
 import Tkinter as tk
 import controller
 
-def init(gui):
-    pg.init()
-    js = pg.joystick.Joystick(0)
-    js.init()
+def init(gui, buttons, axes):
+
     update(js, gui)
 
 def update(js, gui):
