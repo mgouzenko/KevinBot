@@ -76,7 +76,7 @@ class robotGUI():
         self.titleFrame.pack()
 
         #Start commlunications and begin looping
-        comms.init(self)
+        comms.init(self.main)
 
         tk.mainloop()
 
