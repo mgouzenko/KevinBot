@@ -54,7 +54,7 @@ void loop(){
       SetPosition(LEFT_SERV, left_cur + dir*SPEED);
       left_cur = left_cur + dir*SPEED;
       
-      if (right_goto == right_cur) dir = 0
+      if (right_goto == right_cur) dir = 0;
       else if(right_goto > right_cur) dir = 1;
       else dir = -1;
       SetPosition(RIGHT_SERV, right_cur + dir*SPEED);
