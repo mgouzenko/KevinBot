@@ -11,6 +11,7 @@ import Tkinter as tk
 from Tkinter import Menu, Frame, Toplevel
 import tkMessageBox as tkm
 import controller
+import comms
 
 class PS3Controller():
     def __init__(self):
@@ -72,6 +73,119 @@ class PS3Controller():
         self.leftTogLabel = tk.Label(self.buttonLabels, text='Left Toggle',\
             font=("Helvetica", 12), fg='black', bg='red', width = 30, \
             anchor=tk.CENTER)
+
+    #ONLY WORK WITH THIS METHOD: runController
+
+    #This method is run only when the start button in the PS3 Pane is pressed
+    def runController(self, controllers):
+        
+        self.initController(controllers) #Initializes the joystick objects.  Plz do not touch
+
+        while True:
+            pygame.event.pump() #Some thing tkinter needs to update values
+            axes = controller.updateAxes(self.js) #Return axes dict
+            buttons = controller.updateButtons(self.js) #Return buttons dict
+
+            #These update the number values displayed for the axes in the GUI
+            self.xAxisVar.set(value="xAxis is: %(xaxis)s" %{'xaxis':str(axes['X-Axis1'])})
+            self.yAxisVar.set(value="yAxis is: %(xaxis)s" %{'xaxis':str(axes['Y-Axis1'])})
+            self.aAxisVar.set(value="aAxis is: %(xaxis)s" %{'xaxis':str(axes['X-Axis2'])})
+            self.bAxisVar.set(value="bAxis is: %(xaxis)s" %{'xaxis':str(axes['Y-Axis2'])})
+
+            #These simply update the colors of the buttons in the GUI
+            if buttons['xButton'] == 1:
+                self.xLabel.configure(bg = 'green')
+            elif buttons['xButton'] == 0:
+                self.xLabel.configure(bg = 'red')
+
+            if buttons['circleButton'] == 1:
+                self.cirLabel.configure(bg = 'green')
+            elif buttons['circleButton'] == 0:
+                self.cirLabel.configure(bg = 'red')
+
+            if buttons['triangleButton'] == 1:
+                self.triLabel.configure(bg = 'green')
+            elif buttons['triangleButton'] == 0:
+                self.triLabel.configure(bg = 'red')
+
+            if buttons['squareButton'] == 1:
+                self.squLabel.configure(bg = 'green')
+            elif buttons['squareButton'] == 0:
+                self.squLabel.configure(bg = 'red')
+
+            if buttons['leftTrigger'] == 1:
+                self.leftTrigLabel.configure(bg = 'green')
+            elif buttons['leftTrigger'] == 0:
+                self.leftTrigLabel.configure(bg = 'red')
+
+            if buttons['rightTrigger'] == 1:
+                self.rightTrigLabel.configure(bg = 'green')
+            elif buttons['rightTrigger'] == 0:
+                self.rightTrigLabel.configure(bg = 'red')
+
+            if buttons['leftBumper'] == 1:
+                self.leftBumpLabel.configure(bg = 'green')
+            elif buttons['leftBumper'] == 0:
+                self.leftBumpLabel.configure(bg = 'red')
+
+            if buttons['rightBumper'] == 1:
+                self.rightBumpLabel.configure(bg = 'green')
+            elif buttons['rightBumper'] == 0:
+                self.rightBumpLabel.configure(bg = 'red')
+
+            if buttons['selectButton'] == 1:
+                self.selectLabel.configure(bg = 'green')
+            elif buttons['selectButton'] == 0:
+                self.selectLabel.configure(bg = 'red')
+
+            if buttons['startButton'] == 1:
+                self.startLabel.configure(bg = 'green')
+            elif buttons['startButton'] == 0:
+                self.startLabel.configure(bg = 'red')
+
+            if buttons['rightToggle'] == 1:
+                self.rightTogLabel.configure(bg = 'green')
+            elif buttons['rightToggle'] == 0:
+                self.rightTogLabel.configure(bg = 'red')
+
+            if buttons['leftToggle'] == 1:
+                self.leftTogLabel.configure(bg = 'green')
+            elif buttons['leftToggle'] == 0:
+                self.leftTogLabel.configure(bg = 'red')
+            #End update button color for GUI
+
+            self.labelFrame.update()
+
+            #This is a great spot to put the communication stuff because it 
+            #will run everytime the values from the remote controllers are read
+            comms.init(self.main, buttons, axes)
+
+            pygame.time.wait(100) #Reads controller valu every 100 milliseconds
+
+    def initController(self, controllers):
+
+        pygame.init()
+
+        ### Tells the number of joysticks/error detection
+        joystick_count = pygame.joystick.get_count()
+        print ("There is ", joystick_count, "joystick/s")
+        if joystick_count == 0:
+            print ("Error, I did not find any joysticks")
+            tkm.showerror("Error", "Please connect a remote controller.")
+        else:
+            if controllers == 2:
+                if joystick_count == 1:
+                    tkm.showerror("Error", "Current controller setting is set to two controllers." \
+                        " Please connect another controller.")
+            #Create one controller object
+            my_joystick = pygame.joystick.Joystick(0)
+            jsName = my_joystick.get_name
+            print(jsName)
+            my_joystick.init()
+            self.js = my_joystick
+            print 'this is working, yay'
+
+    #DO NOT TOUCH ANYTHING BELOW THIS
 
     def createPS3Pane(self, controllers):
 
@@ -166,108 +280,6 @@ class PS3Controller():
         enableDisable.config(highlightbackground="black", borderwidth= 5, \
             relief = "ridge")
 
-    def initController(self, controllers):
-
-        pygame.init()
-
-        ### Tells the number of joysticks/error detection
-        joystick_count = pygame.joystick.get_count()
-        print ("There is ", joystick_count, "joystick/s")
-        if joystick_count == 0:
-            print ("Error, I did not find any joysticks")
-            tkm.showerror("Error", "Please connect a remote controller.")
-        else:
-            if controllers == 2:
-                if joystick_count == 1:
-                    tkm.showerror("Error", "Current controller setting is set to two controllers." \
-                        " Please connect another controller.")
-            #Create one controller object
-            my_joystick = pygame.joystick.Joystick(0)
-            jsName = my_joystick.get_name
-            print(jsName)
-            my_joystick.init()
-            self.js = my_joystick
-            print 'this is working, yay'
-
-
     def stopController(self):
         
         self.js.quit()
-
-    def runController(self, controllers):
-        
-        self.initController(controllers)
-
-        while True:
-            pygame.event.pump()
-            axes = controller.updateAxes(self.js)
-            buttons = controller.updateButtons(self.js)
-
-            self.xAxisVar.set(value="xAxis is: %(xaxis)s" %{'xaxis':str(axes['X-Axis1'])})
-            self.yAxisVar.set(value="yAxis is: %(xaxis)s" %{'xaxis':str(axes['Y-Axis1'])})
-            self.aAxisVar.set(value="aAxis is: %(xaxis)s" %{'xaxis':str(axes['X-Axis2'])})
-            self.bAxisVar.set(value="bAxis is: %(xaxis)s" %{'xaxis':str(axes['Y-Axis2'])})
-
-            if buttons['xButton'] == 1:
-                self.xLabel.configure(bg = 'green')
-            elif buttons['xButton'] == 0:
-                self.xLabel.configure(bg = 'red')
-
-            if buttons['circleButton'] == 1:
-                self.cirLabel.configure(bg = 'green')
-            elif buttons['circleButton'] == 0:
-                self.cirLabel.configure(bg = 'red')
-
-            if buttons['triangleButton'] == 1:
-                self.triLabel.configure(bg = 'green')
-            elif buttons['triangleButton'] == 0:
-                self.triLabel.configure(bg = 'red')
-
-            if buttons['squareButton'] == 1:
-                self.squLabel.configure(bg = 'green')
-            elif buttons['squareButton'] == 0:
-                self.squLabel.configure(bg = 'red')
-
-            if buttons['leftTrigger'] == 1:
-                self.leftTrigLabel.configure(bg = 'green')
-            elif buttons['leftTrigger'] == 0:
-                self.leftTrigLabel.configure(bg = 'red')
-
-            if buttons['rightTrigger'] == 1:
-                self.rightTrigLabel.configure(bg = 'green')
-            elif buttons['rightTrigger'] == 0:
-                self.rightTrigLabel.configure(bg = 'red')
-
-            if buttons['leftBumper'] == 1:
-                self.leftBumpLabel.configure(bg = 'green')
-            elif buttons['leftBumper'] == 0:
-                self.leftBumpLabel.configure(bg = 'red')
-
-            if buttons['rightBumper'] == 1:
-                self.rightBumpLabel.configure(bg = 'green')
-            elif buttons['rightBumper'] == 0:
-                self.rightBumpLabel.configure(bg = 'red')
-
-            if buttons['selectButton'] == 1:
-                self.selectLabel.configure(bg = 'green')
-            elif buttons['selectButton'] == 0:
-                self.selectLabel.configure(bg = 'red')
-
-            if buttons['startButton'] == 1:
-                self.startLabel.configure(bg = 'green')
-            elif buttons['startButton'] == 0:
-                self.startLabel.configure(bg = 'red')
-
-            if buttons['rightToggle'] == 1:
-                self.rightTogLabel.configure(bg = 'green')
-            elif buttons['rightToggle'] == 0:
-                self.rightTogLabel.configure(bg = 'red')
-
-            if buttons['leftToggle'] == 1:
-                self.leftTogLabel.configure(bg = 'green')
-            elif buttons['leftToggle'] == 0:
-                self.leftTogLabel.configure(bg = 'red')
-
-            self.labelFrame.update()
-
-            pygame.time.wait(100)
