@@ -3,8 +3,8 @@ import Tkinter as tk
 import serial
 import controller
 
-const int PACKET_START = 255
-const int CHECK_MOD = 240
+PACKET_START = 255
+CHECK_MOD = 240
 
 def init(gui, buttons, axes):
 
@@ -50,7 +50,7 @@ def makeIndicatorByte(ButtonDict):
 
 def makeCheckSum(Axis1, Axis2, indicatorByte):
     checkSum = Axis1 + Axis2 + indicatorByte
-    checkSum =% CHECK_MOD
+    checkSum = checkSum % CHECK_MOD
 
     return checkSum
 
