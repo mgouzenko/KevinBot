@@ -13,6 +13,8 @@ import tkMessageBox as tkm
 import controller, XboxPane
 from PS3Controller import PS3Controller
 from XboxController import XboxController
+import cv2
+from PIL import Image, ImageTk
 
 class robotGUI():
     def __init__(self):
@@ -26,6 +28,7 @@ class robotGUI():
 
         #Initialize the master window 
         self.main = tk.Tk()
+        self.main.bind('<Escape>', lambda e: self.main.quit())
         self.main.title("Robot Interface v0.24")
         print controllers
         if len(controllers) == 1:
@@ -71,10 +74,30 @@ class robotGUI():
 
         self.title_label.pack()
 
+                
         #Package frames and create the window
         self.titleFrame.pack()
+ 
+        #Create video feed 
+        self.videoFrame = tk.Label(self.main)
+        self.videoFrame.pack()
+        self.videoStream = cv2.VideoCapture(0)
+        self.startVideoFeed()
 
         tk.mainloop()
+
+    def startVideoFeed(self):
+        _, frame = self.videoStream.read()
+        frame = cv2.flip(frame, 1)
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(cv2image)
+        imgtk = ImageTk.PhotoImage(image=img)
+        self.videoFrame.imgtk = imgtk
+        self.videoFrame.configure(image=imgtk)
+        self.videoFrame.after(10, self.startVideoFeed)
+
+
+
 
     def robotPane(self):
         self.enableDisableFrame = tk.Frame()
