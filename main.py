@@ -17,6 +17,7 @@ import cv2
 from PIL import Image, ImageTk
 
 class robotGUI():
+
     def __init__(self):
 
         self.createMainWindow()
@@ -61,7 +62,7 @@ class robotGUI():
 
         self.robotPane()
 
-        PS3Pane = getattr(PS3Controller(), 'createPS3Pane')
+        PS3Pane = getattr(PS3Controller(self), 'createPS3Pane')
         createXboxPane = getattr(XboxController(), 'createXbox360Pane')
         if 'PS3 PowerA' in self.controllers:
             PS3Pane(self.controllers)
@@ -81,7 +82,7 @@ class robotGUI():
         #Create video feed 
         self.videoFrame = tk.Label(self.main)
         self.videoFrame.pack()
-        self.videoStream = cv2.VideoCapture(1)  #1 is for camera control
+        self.videoStream = cv2.VideoCapture(0)  #1 is for camera control
                                                 #0 is for local camera
         self.startVideoFeed()
 
@@ -102,7 +103,7 @@ class robotGUI():
 
     def robotPane(self):
         self.enableDisableFrame = tk.Frame()
-        self.ps3 = PS3Controller()
+        self.ps3 = PS3Controller(self)
 
         #Frame partitions (subframes) go here
         self.enableDisable=tk.Frame(self.enableDisableFrame,width=129,height=87)

@@ -14,8 +14,9 @@ import controller
 import comms
 
 class PS3Controller():
-    def __init__(self):
+    def __init__(self,parent):
         #Initialize the variables
+        self.parent=parent
         self.xAxisVar = tk.StringVar(value = "xAxis is: N/A")
         self.yAxisVar = tk.StringVar(value = "yAxis is: N/A")
         self.aAxisVar = tk.StringVar(value = "aAxis is: N/A")
@@ -80,7 +81,7 @@ class PS3Controller():
     def runController(self, controllers):
         
         self.initController(controllers) #Initializes the joystick objects.  Plz do not touch
-
+        self.comm=comms.Comm(self.parent)
         while True:
             pygame.event.pump() #Some thing tkinter needs to update values
             axes = controller.updateAxes(self.js) #Return axes dict
@@ -154,11 +155,11 @@ class PS3Controller():
                 self.leftTogLabel.configure(bg = 'red')
             #End update button color for GUI
 
-            self.labelFrame.update()
+            self.comm.update(buttons,axes)
 
-            #This is a great spot to put the communication stuff because it 
-            #will run everytime the values from the remote controllers are read
-            comms.init(self.main, buttons, axes)
+            print "woopwoop"
+
+            self.labelFrame.update()
 
             pygame.time.wait(100) #Reads controller valu every 100 milliseconds
 
@@ -281,5 +282,5 @@ class PS3Controller():
             relief = "ridge")
 
     def stopController(self):
-        
+        self.comm.stop()
         self.js.quit()
