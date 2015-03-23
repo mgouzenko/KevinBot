@@ -32,15 +32,15 @@ def updateAxes(js):
     aAxis = math.ceil(aAxis*10000)/10000
     bAxis = math.ceil(bAxis*10000)/10000
 
-    print 'X-Axis 1: ' + str(xAxis) + '  Y-Axis 1: ' + str(yAxis)
-    print 'X-Axis 2: ' + str(aAxis) + '  Y-Axis 2: ' + str(bAxis)
+    #print 'X-Axis 1: ' + str(xAxis) + '  Y-Axis 1: ' + str(yAxis)
+    #print 'X-Axis 2: ' + str(aAxis) + '  Y-Axis 2: ' + str(bAxis)
 
     controllerDict['X-Axis1'] = xAxis;
     controllerDict['Y-Axis1'] = yAxis;
     controllerDict['X-Axis2'] = aAxis;
     controllerDict['Y-Axis2'] = bAxis;
 
-    print "dict['X-Axis1']: ", controllerDict['X-Axis1'];
+    #print "dict['X-Axis1']: ", controllerDict['X-Axis1'];
 
     return controllerDict
 
@@ -63,12 +63,12 @@ def updateButtons(js):
     leftToggle = js.get_button(10)
     rightToggle = js.get_button(11)
 
-    print 'X Button is: ' + str(xButton) + '  Circle Button is: ' + str(circleButton)
-    print 'Triangle Button is: ' + str(triangleButton) + '  Square Button is: ' + str(squareButton)
-    print 'Left Bumper is: ' + str(leftBumper) + '  Right Bumper is: ' + str(rightBumper)
-    print 'Left Trigger is: ' + str(leftTrigger) + '  Right Trigger is: ' + str(rightTrigger)
-    print 'Select Button is: ' + str(selectButton) + '  Start Button is: ' + str(startButton)
-    print 'Left Toggle is: ' + str(leftToggle) + '  Right Toggle is: ' + str(rightToggle)
+    #print 'X Button is: ' + str(xButton) + '  Circle Button is: ' + str(circleButton)
+    #print 'Triangle Button is: ' + str(triangleButton) + '  Square Button is: ' + str(squareButton)
+    #print 'Left Bumper is: ' + str(leftBumper) + '  Right Bumper is: ' + str(rightBumper)
+    #print 'Left Trigger is: ' + str(leftTrigger) + '  Right Trigger is: ' + str(rightTrigger)
+    #print 'Select Button is: ' + str(selectButton) + '  Start Button is: ' + str(startButton)
+    #print 'Left Toggle is: ' + str(leftToggle) + '  Right Toggle is: ' + str(rightToggle)
 
     buttonDict['xButton'] = xButton;
     buttonDict['circleButton'] = circleButton;
@@ -83,6 +83,6 @@ def updateButtons(js):
     buttonDict['leftToggle'] = leftToggle;
     buttonDict['rightToggle'] = rightToggle;
 
-    print "dict['xButton']: ", buttonDict['xButton'];
+    #print "dict['xButton']: ", buttonDict['xButton'];
 
     return buttonDict

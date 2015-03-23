@@ -15,6 +15,7 @@ from PS3Controller import PS3Controller
 from XboxController import XboxController
 import cv2
 from PIL import Image, ImageTk
+import serial.tools.list_ports as listPorts
 
 class robotGUI():
 
@@ -85,6 +86,8 @@ class robotGUI():
         self.videoStream = cv2.VideoCapture(0)  #1 is for camera control
                                                 #0 is for local camera
         self.startVideoFeed()
+
+        self.comStr = self.retrieveComPort()
 
         tk.mainloop()
 
@@ -245,8 +248,7 @@ class robotGUI():
         self.knownListbox = tk.Listbox(self.knownJsFrame, height = 15, width = 29)
         self.knownListbox.insert(tk.END)
 
-        for item in ["COM 1", "COM 2", "COM 3", "COM 4", "COM 5", "COM 6", "COM 7", \
-        "COM 8", "COM 9", "COM 1"]:
+        for item in [p[0] for p in listPorts.comports()]:
             self.knownListbox.insert(tk.END, item)
 
         self.chosenListbox = tk.Listbox(self.chosenJsFrame, height = 15, width = 29)

@@ -155,9 +155,7 @@ class PS3Controller():
                 self.leftTogLabel.configure(bg = 'red')
             #End update button color for GUI
 
-            self.comm.update(buttons,axes)
-
-            print "woopwoop"
+            print self.comm.update(buttons,axes)
 
             self.labelFrame.update()
 
