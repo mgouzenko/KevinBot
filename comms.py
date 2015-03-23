@@ -46,7 +46,7 @@ class Comm():
         indicatorByte = 0
         indicatorIndex = 1
         #input = [Filler, Filler, Laser Toggle, Robot Enabled Toggle, Right Hip Pos, Left Hip Pos, Smoothwalk Toggle, Fire]
-        roboInput = [0, 0, buttonDict['leftTrigger'], buttonDict['startButton'], buttonDict['rightBumper'], buttonDict['leftBumper'], buttonDict['xButton'], buttonDict['rightTrigger']]
+        roboInput = [0, 0, buttonDict['leftBumper'], buttonDict['startButton'], buttonDict['rightTrigger'], buttonDict['leftTrigger'], buttonDict['xButton'], buttonDict['rightBumper']]
 
         for n in roboInput:
             indicatorByte += n*indicatorIndex

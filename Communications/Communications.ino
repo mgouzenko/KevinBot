@@ -9,9 +9,9 @@ const int CENTER = 512;
 const int SPEED = 5;
 const int HIPS_STEP = 200;
 
-const int LEFT_SERV = 3;
-const int RIGHT_SERV = 2;
-const int HIPS_SERV = 5;
+const int LEFT_SERV = 2;
+const int RIGHT_SERV = 1;
+const int HIPS_SERV = 3;
 
 int left_goto;
 int left_cur;
@@ -21,6 +21,8 @@ int hips_goto;
 int hips_cur;
 int smooth_walk;
 int enabled;
+int checked=0;
+int test;
 
 void setup(){
   Serial.begin(38400);
@@ -35,13 +37,7 @@ void setup(){
 }
 
 void loop(){
-  while(true){ // I apologize for the messy indenting
-    comm_read();
-    if(!enabled){
-      comm_write();
-      continue;
-    }
-    
+  if (enabled){
     SetPosition(HIPS_SERV, hips_goto);
     hips_cur = hips_goto;
     
@@ -66,10 +62,8 @@ void loop(){
       SetPosition(LEFT_SERV, left_goto);
       left_cur = left_goto;
     }
-    
-    comm_write();
-    
-  }  
+  }
+  comm_read();
 }
 
 void comm_write(){
@@ -85,51 +79,51 @@ void comm_write(){
   
   check_sum += (left_cur)/4;
   check_sum += (right_cur)/4;
-  check_sum += (int)('t');
+  check_sum += (hips_cur)/4;
   check_sum += (int)('t');
   check_sum += (int)('b');
   check_sum += bits;
   check_sum = check_sum % CHECK_MOD;
   
-  Serial.write((char)PACKET_START);
-  Serial.write((char)((left_cur)/4));
-  Serial.write((char)((right_cur)/4));
-  Serial.write('t'); //random filler (turret)
+  Serial.write(char(PACKET_START));
+  Serial.write(char((left_cur)/4));
+  Serial.write(char((right_cur)/4));
+  Serial.write(char((hips_cur)/4)); //random filler (turret)
   Serial.write('t'); //random filler (turret)
   Serial.write('b'); //random filler (battery)
-  Serial.write((char)bits);
-  Serial.write((char)check_sum);
-  
-  
-
+  Serial.write(char(bits));
+  Serial.write(char(check_sum));
 }
 
 void comm_read(){
   int bits;
   if(Serial.available() >= IN_PACKET_SIZE  &&  Serial.read() == PACKET_START){
-    
-    byte in[IN_PACKET_SIZE-2];
-    for(int i=0; i < IN_PACKET_SIZE-2; ++i){
-      in[i] = Serial.read();
-    }
-    
-    int check_sum = (int)(Serial.read());
-    unsigned int sum = 0;
-    for(int i = 0; i < IN_PACKET_SIZE-2; ++i){
-      sum += (int)(in[i]);
-    }
-    
-    if(sum == check_sum){
-      left_goto = 4*(int)(in[0]);
-      right_goto = 4*(int)(in[1]);
-      //turret variable 1 in[2]
-      //turret_variable 2 in[3]
-      bits = in[3];
+    byte v1=Serial.read();
+    byte v2=Serial.read();
+    byte v3=Serial.read();
+    byte v4=Serial.read();
+    byte v5=Serial.read();
+    byte cs=Serial.read();
+    int sum=int(v1);
+    sum+=int(v2);
+    sum+=int(v3);
+    sum+=int(v4);
+    sum+=int(v5);
+
+    while (sum>=240)
+      sum-=240;
+      
+    if(sum == cs){
+      left_goto = 4*(int)(v1);
+      right_goto = 4*(int)(v2);
+      //turret variable 1 v3
+      //turret_variable 2 v4
+      bits = v5;
       
       bits /= 2; //filler
       bits /= 2; //filler
       bits /= 2; //laser toggle
-      enabled = bits%2;
+      //enabled = bits%2;
       bits /= 2;
       int temp = bits%4;
       bits /= 4;
@@ -143,6 +137,7 @@ void comm_read(){
         hips_goto = CENTER - HIPS_STEP;
       else
         hips_goto = CENTER;
+      comm_write();
     }
   }
 }
