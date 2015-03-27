@@ -83,7 +83,7 @@ class robotGUI():
         #Create video feed 
         self.videoFrame = tk.Label(self.main)
         self.videoFrame.pack()
-        self.videoStream = cv2.VideoCapture(0)  #1 is for camera control
+        self.videoStream = cv2.VideoCapture(2)  #1 is for camera control
                                                 #0 is for local camera
         self.startVideoFeed()
 
@@ -94,11 +94,14 @@ class robotGUI():
     def startVideoFeed(self):
         _, frame = self.videoStream.read()
         #frame = cv2.flip(frame, 1)
-        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-        img = Image.fromarray(cv2image)
-        imgtk = ImageTk.PhotoImage(image=img)
-        self.videoFrame.imgtk = imgtk
-        self.videoFrame.configure(image=imgtk)
+        try:
+            cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            img = Image.fromarray(cv2image)
+            imgtk = ImageTk.PhotoImage(image=img)
+            self.videoFrame.imgtk = imgtk
+            self.videoFrame.configure(image=imgtk)
+        except:
+            print "Frame Failed!"
         self.videoFrame.after(10, self.startVideoFeed)
 
 

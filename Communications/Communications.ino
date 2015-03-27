@@ -7,33 +7,52 @@ const int PACKET_START = 255;
 
 const int CENTER = 512;
 const int SPEED = 5;
-const int STRIDE = 1;
-const int HIPS_STEP = 200;
+const float STRIDE = .4;
+const int HIPS_STEP = 300;
+
+const int PLIMIT = 300;
+const int TLIMITUP = 600;
+const int TLIMITDOWN = 480;
+const int TCENTER = 512;
+const float ROTATION = .01;
 
 const int LEFT_SERV = 3;
 const int RIGHT_SERV = 1;
 const int HIPS_SERV = 2;
+const int PAN_SERV = 4;
+const int TILT_SERV = 5;
+
+const int GUN_PIN = 7;
 
 int x;
 int y;
+int p;
+int t;
+int hipSwitch;
 int left_goto;
 int left_cur;
 int right_goto;
 int right_cur;
 int hips_goto;
 int hips_cur;
+int pan_cur;
+int tilt_cur;
+int fire = 0;
 int smooth_walk;
 int enabled;
 int test=0;
 
 void setup(){
   Serial.begin(38400);
+  pinMode(GUN_PIN,OUTPUT);
+  digitalWrite(GUN_PIN,LOW);
+  
   SetPosition(HIPS_SERV, CENTER);
   SetPosition(LEFT_SERV, CENTER);
   SetPosition(RIGHT_SERV, CENTER);
-  left_cur = right_cur = hips_cur = CENTER;
+  left_cur = right_cur = hips_cur = pan_cur = CENTER;
   left_goto = right_goto = hips_goto = CENTER;
-  x = y = CENTER;
+  tilt_cur = TCENTER;
   smooth_walk = 0;
   enabled = 1;
   delay(1000);
@@ -41,9 +60,19 @@ void setup(){
 
 void loop(){
   if (enabled){
+    if(hipSwitch == 1){ //this SHOULD be right leg up
+      hips_goto = CENTER - HIPS_STEP;
+      left_goto = CENTER - y;
+      right_goto = CENTER - x - y;
+    }else if(hipSwitch == 2){ //this SHOULD be left leg up
+      hips_goto = CENTER + HIPS_STEP;
+      left_goto = CENTER -x + y;
+      right_goto = CENTER + y;
+    }else{
+      hips_goto = CENTER;
+    }
     SetPosition(HIPS_SERV, hips_goto);
     hips_cur = hips_goto;
-    //test=hips_goto/4;
     delay(1);
     if(smooth_walk){
       //speed may be too fast. If so, make movement occur every nth cycle
@@ -62,10 +91,27 @@ void loop(){
     }else{//JERKY WALKING, BOY
       SetPosition(RIGHT_SERV, right_goto);
       right_cur = right_goto;
+      delay(1);
       
       SetPosition(LEFT_SERV, left_goto);
       left_cur = left_goto;
+      delay(1);
     }
+    tilt_cur+=t;
+    pan_cur-=p;
+    if (tilt_cur>TLIMITUP)
+      tilt_cur=TLIMITUP;
+    if (tilt_cur<TLIMITDOWN)
+      tilt_cur=TLIMITDOWN;
+    if (pan_cur>CENTER+PLIMIT)
+      pan_cur=CENTER+PLIMIT;
+    if (pan_cur<CENTER-PLIMIT)
+      pan_cur=CENTER-PLIMIT;
+    SetPosition(TILT_SERV, tilt_cur);
+    delay(1);
+    SetPosition(PAN_SERV, pan_cur);
+    delay(1);
+    digitalWrite(GUN_PIN,fire);
   }
   comm_read();
 }
@@ -118,36 +164,25 @@ void comm_read(){
       sum-=240;
       
     if(sum == cs){
-      y = CENTER + STRIDE*((int)(v1)-128);
-      x = CENTER + STRIDE*((int)(v2)-128);
-      //turret variable 1 v3
-      //turret_variable 2 v4
+      y = int(STRIDE*float((int)(v1)-128));
+      x = int(STRIDE*float((int)(v2)-128));
+      t = int(ROTATION*float((int)(v3)-128));
+      p = int(ROTATION*float((int)(v4)-128));
       bits = v5;
-      
+      test = bits;
       bits /= 2; //filler
       bits /= 2; //filler
       bits /= 2; //laser toggle
       //enabled = bits%2;
       bits /= 2;
-      int temp = bits%4;
+      hipSwitch = bits%4;
       bits /= 4;
       smooth_walk = bits%2;
       bits /= 2;
+      fire = bits%2;
+      test = fire;
       bits /= 2; //fire!
       
-      if(temp == 1){ //this SHOULD be right leg up
-        hips_goto = CENTER - HIPS_STEP;
-        left_goto = y;
-        right_goto = x;
-      }else if(temp == 2){ //this SHOULD be left leg up
-        hips_goto = CENTER + HIPS_STEP;
-        left_goto = x;
-        right_goto = y;
-      }else{
-        hips_goto = CENTER;
-        left_goto = CENTER;
-        right_goto = CENTER;
-      }
       comm_write();
     }
   }
