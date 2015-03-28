@@ -9,6 +9,8 @@ buttons are then returned for use.
 ''' 
 import math, pygame
 
+deadband = .12
+
 def updateAxes(js):
 
     controllerDict = {'X-Axis1': 0, 'Y-Axis1': 0, 'X-Axis2': 0, 'Y-Axis2': 0};
@@ -18,13 +20,13 @@ def updateAxes(js):
     aAxis = js.get_axis(2)
     bAxis = js.get_axis(3) * -1
 
-    if xAxis < 0.1 and xAxis > -0.1:
+    if xAxis < deadband and xAxis > -deadband:
         xAxis = 0
-    if yAxis < 0.1 and yAxis > -0.1:
+    if yAxis < deadband and yAxis > -deadband:
         yAxis = 0
-    if aAxis < 0.1 and aAxis > -0.1:
+    if aAxis < deadband and aAxis > -deadband:
         aAxis = 0
-    if bAxis < 0.1 and bAxis > -0.1:
+    if bAxis < deadband and bAxis > -deadband:
         bAxis = 0
 
     xAxis = math.ceil(xAxis*10000)/10000

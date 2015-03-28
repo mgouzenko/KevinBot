@@ -10,11 +10,11 @@ const int SPEED = 5;
 const float STRIDE = .4;
 const int HIPS_STEP = 300;
 
-const int PLIMIT = 300;
+const int PLIMIT = 45      ``1120;
 const int TLIMITUP = 600;
 const int TLIMITDOWN = 480;
 const int TCENTER = 512;
-const float ROTATION = .01;
+const float ROTATION = .005;
 
 const int LEFT_SERV = 3;
 const int RIGHT_SERV = 1;
@@ -26,8 +26,8 @@ const int GUN_PIN = 7;
 
 int x;
 int y;
-int p;
-int t;
+float p;
+float t;
 int hipSwitch;
 int left_goto;
 int left_cur;
@@ -35,12 +35,13 @@ int right_goto;
 int right_cur;
 int hips_goto;
 int hips_cur;
-int pan_cur;
-int tilt_cur;
+float pan_cur;
+float tilt_cur;
 int fire = 0;
 int smooth_walk;
 int enabled;
 int test=0;
+int centering;
 
 void setup(){
   Serial.begin(38400);
@@ -97,19 +98,24 @@ void loop(){
       left_cur = left_goto;
       delay(1);
     }
-    tilt_cur+=t;
-    pan_cur-=p;
-    if (tilt_cur>TLIMITUP)
-      tilt_cur=TLIMITUP;
-    if (tilt_cur<TLIMITDOWN)
-      tilt_cur=TLIMITDOWN;
-    if (pan_cur>CENTER+PLIMIT)
-      pan_cur=CENTER+PLIMIT;
-    if (pan_cur<CENTER-PLIMIT)
-      pan_cur=CENTER-PLIMIT;
-    SetPosition(TILT_SERV, tilt_cur);
+    if (centering) {
+      tilt_cur += 5*((tilt_cur<TCENTER)-(tilt_cur>TCENTER));
+      pan_cur += 5*((pan_cur<CENTER)-(pan_cur>CENTER));
+    }else{
+      tilt_cur+=t;
+      pan_cur-=p;
+      if (tilt_cur>TLIMITUP)
+        tilt_cur=TLIMITUP;
+      if (tilt_cur<TLIMITDOWN)
+        tilt_cur=TLIMITDOWN;
+      if (pan_cur>CENTER+PLIMIT)
+        pan_cur=CENTER+PLIMIT;
+      if (pan_cur<CENTER-PLIMIT)
+        pan_cur=CENTER-PLIMIT;
+    }
+    SetPosition(TILT_SERV, int(tilt_cur));
     delay(1);
-    SetPosition(PAN_SERV, pan_cur);
+    SetPosition(PAN_SERV, int(pan_cur));
     delay(1);
     digitalWrite(GUN_PIN,fire);
   }
@@ -166,8 +172,8 @@ void comm_read(){
     if(sum == cs){
       y = int(STRIDE*float((int)(v1)-128));
       x = int(STRIDE*float((int)(v2)-128));
-      t = int(ROTATION*float((int)(v3)-128));
-      p = int(ROTATION*float((int)(v4)-128));
+      t = ROTATION*float((int)(v3)-128);
+      p = ROTATION*float((int)(v4)-128);
       bits = v5;
       test = bits;
       bits /= 2; //filler
@@ -177,7 +183,7 @@ void comm_read(){
       bits /= 2;
       hipSwitch = bits%4;
       bits /= 4;
-      smooth_walk = bits%2;
+      centering = bits%2;
       bits /= 2;
       fire = bits%2;
       test = fire;
